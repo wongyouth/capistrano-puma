@@ -28,6 +28,11 @@ RUNPUMA=<%=fetch(:puma_run_path)%>
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
 
+# Load rbenv setting
+if [ -e /etc/profile.d/rbenv.sh ]; then
+  . /etc/profile.d/rbenv.sh
+fi
+
 # Define LSB log_* functions.
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
@@ -71,8 +76,8 @@ do_start_one_do() {
   log_daemon_msg "--> Woke up puma $1"
   log_daemon_msg "user $2"
   log_daemon_msg "log to $4"
-  log_daemon_msg "start-stop-daemon --verbose --start --chdir $1 --chuid $2 --background --exec $RUNPUMA $1 "
-  start-stop-daemon --verbose --start --chdir $1 --chuid $2 --background --exec $RUNPUMA -- $1
+  log_daemon_msg "start-stop-daemon --verbose --start --chdir $1 --chuid $2 --exec $RUNPUMA $1 "
+  start-stop-daemon --verbose --start --chdir $1 --chuid $2 --exec $RUNPUMA -- $1
 }
 
 #
@@ -172,7 +177,7 @@ do_status_one() {
   if [ -e $PIDFILE ]; then
     log_daemon_msg "--> About to status puma $1"
 
-    su - $2 -c "pumactl --state $dir/tmp/pids/puma.state stats "
+    su - $2 -c "pumactl --state $dir/tmp/pids/puma.state status "
 
   else
     log_daemon_msg "--> $1 isn't there :(..."
